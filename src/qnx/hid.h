@@ -78,7 +78,9 @@ typedef struct _mouse_raw_data {
 * Joystick Data Structures
 *
 *******************************************************************************/
-#define AXIS_MAX 10
+#define JOYSTICK_BUTTON_MAX 64
+#define JOYSTICK_AXIS_MAX 6
+
 typedef struct _joystick_attrib {
 	_uint16 nButtons;               /* Number of buttons                    */
 	_uint16 nButtons2;               /* Number of buttons                    */
@@ -91,14 +93,14 @@ typedef struct _joystick_attrib {
 
 	_uint16 naxis;
 
-	uint8_t abs_map[AXIS_MAX];
-	uint8_t has_abs[AXIS_MAX];
+	uint8_t abs_map[JOYSTICK_AXIS_MAX];
+	uint8_t has_abs[JOYSTICK_AXIS_MAX];
 
 	struct axis_correct
 	{
 		int minimum;
 		int maximum;
-	} abs_correct[AXIS_MAX];
+	} abs_correct[JOYSTICK_AXIS_MAX];
 
 	_uint8 has_hat;
 

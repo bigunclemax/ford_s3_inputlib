@@ -19,6 +19,9 @@
  * $ 
  */
 
+#define EOK 0
+#define ENOTSUP	48
+
 /*
  *
  * hid.c 
@@ -29,10 +32,18 @@
 #include <time.h>
 #include <assert.h>
 #include <sys/queue.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <errno.h>
+#include <string.h>
 
 #include <sys/devi.h>
 #include "hid.h"
+#if 0
 #include "photon.h"
+#else
+#include "const.h"
+#endif
 
 // MOUSE
 #define MAX_BUTTONS	(5)
@@ -164,7 +175,9 @@ void devi_hid_init()
 		char *pMsgTxt = "System error. Driver is terminating\n";
 
 		fprintf(stderr, pMsgTxt);
+#if SLOG
 		slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt);
+#endif
 		exit(-1);
 	}
 }
@@ -192,7 +205,9 @@ int devi_hid_server_connect(char *serv_path_name)
 		char *pMsgTxt = "Error: cannot connect to HID server(error code = %d).\nDriver is terminating \n";
 
 		fprintf(stderr, pMsgTxt, rc);
+#if SLOG
 		slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt, rc);
+#endif
 		exit(-2);
 	}
 
@@ -483,7 +498,10 @@ int accept_report(struct hidd_collection *pCollection,
 	} else {
 		char *pMsgTxt = "hidd_report_attach failed(%i)\n";
 
+		fprintf(stderr, pMsgTxt, rc);
+#if SLOG
 		slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt, rc);
+#endif
 		return rc;
 	}
 
@@ -679,7 +697,9 @@ void attach_keyboard_reports(struct hidd_connection *pConnection,
 			char *pMsgTxt = "Cannot attach keyboard input report(error code = %i)\n";
 
 			fprintf(stderr, pMsgTxt, rc);
+#if SLOG
 			slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt, rc);
+#endif
 			remove_device_data(pInstance);
 			return;
 		}
@@ -768,7 +788,10 @@ void attach_mouse_reports(struct hidd_connection *pConnection,
 		if (EOK != rc) {
 			char *pMsgTxt = "Cannot attach mouse input report(error code %i)\n";
 
+			fprintf(stderr, pMsgTxt, rc);
+#if SLOG
 			slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt, rc);
+#endif
 			remove_device_data(pInstance);
 			return;
 		}
@@ -856,7 +879,9 @@ void attach_joystick_reports(struct hidd_connection *pConnection,
 			char *pMsgTxt = "Cannot attach input report\n";
 
 			fprintf(stderr, pMsgTxt);
+#if SLOG
 			slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt);
+#endif
 			remove_device_data(pInstance);
 			return;
 		}
@@ -938,7 +963,9 @@ void attach_control_reports(struct hidd_connection *pConnection,
 			char *pMsgTxt = "Cannot attach input report\n";
 
 			fprintf(stderr, pMsgTxt);
+#if SLOG
 			slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt);
+#endif
 			remove_device_data(pInstance);
 			return;
 		}
@@ -1023,7 +1050,9 @@ void attach_touch_reports(struct hidd_connection *pConnection,
 			char *pMsgTxt = "Cannot attach input report\n";
 
 			fprintf(stderr, pMsgTxt);
+#if SLOG
 			slogf(_SLOG_SETCODE(_SLOGC_INPUT, 0), _SLOG_ERROR, pMsgTxt);
+#endif
 			remove_device_data(pInstance);
 			return;
 		}
