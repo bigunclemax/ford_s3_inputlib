@@ -1279,7 +1279,7 @@ void report_mouse(struct hidd_report *pReport, void *pReportData,
 */
 
 	// Is there Wheel data ?
-	if ((pMouseData->flags & HID_MOUSE_WHEEL_ON) &&
+	if (/*(pMouseData->flags & HID_MOUSE_WHEEL_ON) && */
 	    ((EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_WHEEL, pReportData, &nValue)) ||
 	    (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_Z, pReportData, &nValue)))) {
 		mouseRawData.z =(_int16)nValue;
