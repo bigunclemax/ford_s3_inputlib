@@ -853,6 +853,22 @@ void attach_mouse_reports(struct hidd_connection *pConnection,
 	}
 }
 
+void hidd_report_dump_prop(const hidd_report_props_t *prop)
+{
+	printf("--- prop start ---\n");
+	printf("Usage Page: 0x%04hx\n", prop->usage_page);
+	printf("Report ID:  %02u\n", prop->report_id);
+	printf("Report Size:  %04hu\n", prop->report_size);
+	printf("Report Count: %04hu\n", prop->report_count);
+	printf("Logical Minimum:  %04hd\n", prop->logical_min);
+	printf("Logical Maximum:  %04hd\n", prop->logical_max);
+	printf("Physical Minimum: %04hd\n", prop->physical_min);
+	printf("Physical Maximum: %04hd\n", prop->physical_max);
+	printf("Usage Minimum: 0x%04hx\n", prop->usage_min);
+	printf("Usage Maximum: 0x%04hx\n", prop->usage_max);
+	printf("--- prop end ---\n\n");
+}
+
 /* Description: Service function; can be called while insertion of joystick report  */
 /* Input      : hidd_connection * pConnection - connection                          */
 /*              hidd_device_instance_t * pDevInstance - device instance handler     */
