@@ -869,6 +869,90 @@ void hidd_report_dump_prop(const hidd_report_props_t *prop)
 	printf("--- prop end ---\n\n");
 }
 
+void joystick_add_axis(pRep_joystick_attrib_t pJoystickAttrib, int axis,
+		       const hidd_report_props_t *pReport_props)
+{
+	struct axis_correct *correct = &pJoystickAttrib->abs_correct[axis];
+
+	if (pJoystickAttrib->has_abs[axis]) {
+		if (verbosity >= 4)
+			printf("Joystick axis %d already added\n", axis);
+
+		return;
+	}
+
+	pJoystickAttrib->abs_map[axis] = pJoystickAttrib->naxis;
+	pJoystickAttrib->has_abs[axis] = 1;
+
+	correct->minimum = pReport_props->logical_min;
+	correct->maximum = pReport_props->logical_max;
+
+	//TODO: scale?
+
+	pJoystickAttrib->naxis++;
+
+	if (verbosity >= 4)
+		printf("Joystick has absolute axis: 0x%.2x (min:%d, max:%d)\n",
+		       axis, correct->minimum, correct->maximum);
+}
+
+void joystick_add_hat(pRep_joystick_attrib_t pJoystickAttrib,
+		      const hidd_report_props_t *pReport_props)
+{
+	struct hat_axis_correct *correct = &pJoystickAttrib->hat_correct;
+
+	pJoystickAttrib->has_hat = 1;
+	correct->minimum = pReport_props->logical_min;
+	correct->maximum = pReport_props->logical_max;
+
+	if (verbosity >= 4)
+		printf("Joystick has absolute hat (min:%d, max:%d)\n",
+		       correct->minimum, correct->maximum);
+}
+
+/* Description: Service function;   */
+/* Input      : hidd_report_props_t *pReport_props                                  */
+/*              _uint16 nNumProps                                                   */
+/*              pRep_joystick_attrib_t pJoystickAttrib                              */
+/* Output     : None                                                                */
+/* Return     : None                                                                */
+/* Comment    : None                                                                */
+void joystick_parse_props(const hidd_report_props_t *pReport_props,
+			  const _uint16 nNumProps,
+			  pRep_joystick_attrib_t pJoystickAttrib)
+{
+	int i;
+
+	for (i = 0; i < nNumProps; ++i) {
+		_uint16 usage = pReport_props[i].usage_min;
+
+		if (verbosity >= 4)
+			hidd_report_dump_prop(&pReport_props[i]);
+
+		if (pReport_props[i].usage_page != HIDD_PAGE_DESKTOP)
+			continue;
+
+		if ((usage >= HIDD_USAGE_X) && (usage <= HIDD_USAGE_RZ)) {
+			joystick_add_axis(pJoystickAttrib, (usage - HIDD_USAGE_X),
+					  &pReport_props[i]);
+			continue;
+		}
+
+		if (usage == HIDD_USAGE_HAT_SWITCH)
+			joystick_add_hat(pJoystickAttrib, &pReport_props[i]);
+	}
+}
+
+void joystick_parse_id(struct hidd_connection *pConnection,
+		       hidd_device_instance_t *pInstance,
+		       pRep_joystick_attrib_t pJoystickAttrib)
+{
+	pJoystickAttrib->devno = pInstance->devno;
+	pJoystickAttrib->vendor_id = pInstance->device_ident.vendor_id;
+	pJoystickAttrib->product_id = pInstance->device_ident.product_id;
+	pJoystickAttrib->version = 0; //pInstance->device_ident.version;
+}
+
 /* Description: Service function; can be called while insertion of joystick report  */
 /* Input      : hidd_connection * pConnection - connection                          */
 /*              hidd_device_instance_t * pDevInstance - device instance handler     */
@@ -950,7 +1034,32 @@ void attach_joystick_reports(struct hidd_connection *pConnection,
 				break;
 			}
 		}
-		
+
+		for (pRepData = LIST_FIRST_ITEM(&(pModule->inpRepList));
+		     NULL != pRepData; pRepData = LIST_NEXT_ITEM(pRepData, lst_conn)) {
+
+			hidd_report_props_t *pReport_props;
+			_uint16 nNumProps;
+			_uint16 nPropsLen;
+
+			rc = hidd_get_num_props(pRepData->pRepInstance, &nNumProps);
+			if ((EOK != rc) || (0 == nNumProps))
+				continue; /* We cannot determine anything */
+
+			nPropsLen = sizeof(hidd_report_props_t) * nNumProps;
+			pReport_props = malloc(nPropsLen);
+
+			rc = hidd_get_report_props(pRepData->pRepInstance,
+						   pReport_props, &nPropsLen);
+			if (EOK == rc)
+				joystick_parse_props(pReport_props, nNumProps,
+						     pJoystickAttrib);
+
+			free(pReport_props);
+		}
+
+		joystick_parse_id(pConnection, pInstance, pJoystickAttrib);
+
 		pJoystickAttrib->flags = 0;
 		break;
 	}
