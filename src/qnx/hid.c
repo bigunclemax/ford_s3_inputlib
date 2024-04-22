@@ -1060,6 +1060,12 @@ void attach_joystick_reports(struct hidd_connection *pConnection,
 
 		joystick_parse_id(pConnection, pInstance, pJoystickAttrib);
 
+		// Call insertion callback
+		if (pModule->pInput_module->insertion)
+			(pModule->pInput_module->insertion)(pModule->pInput_module,
+							    sizeof(*pJoystickAttrib),
+							    (void *)pJoystickAttrib);
+
 		pJoystickAttrib->flags = 0;
 		break;
 	}
