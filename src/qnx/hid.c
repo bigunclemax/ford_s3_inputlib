@@ -448,6 +448,7 @@ void removal(struct hidd_connection *pConnection,
 	     hidd_device_instance_t * pInstance)
 {
 	struct timespec t;
+	pModule_data_t pModule;
 
 	clock_gettime(CLOCK_REALTIME, &t);
 	t.tv_sec += MAX_TIME_WAIT;
@@ -458,6 +459,25 @@ void removal(struct hidd_connection *pConnection,
 	if (verbosity >= 3)
 		printf("Device Removal: device instance = %p, device no = %i\n",
 		       pInstance, pInstance->devno);
+
+	for (pModule = LIST_FIRST_ITEM(&modList); NULL != pModule;
+	     pModule = LIST_NEXT_ITEM(pModule, lst_conn)) {
+
+		if ((HIDD_CONNECT_WILDCARD != pModule->nDev) &&
+		    (pInstance->devno != pModule->nDev))
+			continue;
+
+		if (!(pModule->pInput_module->type & DEVI_CLASS_JOYSTICK))
+			continue;
+
+		// Call removal callback
+		if (pModule->pInput_module->removal)
+			(pModule->pInput_module->removal)(pModule->pInput_module,
+							  sizeof(pInstance->devno),
+							  (void *)&pInstance->devno);
+
+		break;
+	}
 
 	remove_device_reports(pInstance);
 	remove_device_data(pInstance);
