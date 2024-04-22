@@ -703,7 +703,7 @@ void attach_keyboard_reports(struct hidd_connection *pConnection,
 			remove_device_data(pInstance);
 			return;
 		}
-
+#if 0
 		// Keyboard usually has only one input report - pressed keys
 		hidd_num_buttons((LIST_FIRST_ITEM(&(pModule->inpRepList)))->pRepInstance, &nButtons);
 
@@ -722,7 +722,7 @@ void attach_keyboard_reports(struct hidd_connection *pConnection,
 //     devctl.rate  = pKeyboardData -> kbdData.nRate;
 		kbd_devctrl(pModule, DEVCTL_SETKBD, &devctl, pKeyboardData); // Reset keyboard
 		kbd_devctrl(pModule, DEVCTL_LED, &nLedState, pKeyboardData); // Switch off leds
-
+#endif
 		break;
 	}
 }
