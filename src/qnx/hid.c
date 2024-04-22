@@ -341,6 +341,19 @@ void insertion(struct hidd_connection *pConnection,
 		printf("Device insertion: device instance = %p, device no = %i\n",
 		       pInstance, pInstance->devno);
 
+	if (verbosity >= 3) {
+		char buffer[1024];
+
+		printf("Device Address       : %d\n", pInstance->devno);
+		hidd_get_manufacturer_string(pConnection, pInstance, buffer, sizeof(buffer));
+		printf("Vendor               : 0x%04x (%s)\n", pInstance->device_ident.vendor_id, buffer);
+		hidd_get_product_string(pConnection, pInstance, buffer, sizeof(buffer));
+		printf("Product              : 0x%04x (%s)\n", pInstance->device_ident.product_id, buffer);
+		printf("Version              : r%x.%02x\n", (pInstance->device_ident.version >> 8), (pInstance->device_ident.version & 0xFF));
+		hidd_get_serial_number_string(pConnection, pInstance, buffer, sizeof(buffer));
+		printf("Serial Number        : %s\n", buffer);
+	}
+
 	for (i = 0; i < nColl; ++i) {
 		if (EOK != hidd_collection_usage(pCollections[i], &usage_page, &usage))
 			break;
