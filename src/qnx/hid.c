@@ -1290,9 +1290,11 @@ void report_mouse(struct hidd_report *pReport, void *pReportData,
 
 		for (i = 0; i < nKeys; ++i) {
 			int nInd = usages[i] - 1; // Button usages start from 1
-
+#if 0
 			assert(nInd < ARRAY_SIZE(aButtonFlags));
 			mouseRawData.btnStates |= aButtonFlags[nInd];
+#endif
+			mouseRawData.btnStates |= (1 << nInd);
 		}
 	}
 
