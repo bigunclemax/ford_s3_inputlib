@@ -1486,8 +1486,8 @@ void report_mouse(struct hidd_report *pReport, void *pReportData,
 void report_joystick(struct hidd_report *pReport, void *pReportData,
 		     _uint32 nRepLen, _uint32 flags, pReport_data_t pPrivData)
 {
-	pRep_joystick_attrib_t pMouseData;
-	_uint16 usages[32];
+	pRep_joystick_attrib_t pJoystickData;
+	_uint16 usages[JOYSTICK_BUTTON_MAX];
 	_uint16 nKeys;
 	_uint32 nValue;
 	int i;
