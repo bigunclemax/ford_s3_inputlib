@@ -1026,10 +1026,18 @@ void attach_joystick_reports(struct hidd_connection *pConnection,
 			hidd_num_buttons(pRepData->pRepInstance, &nButtons);
 
 			if (0 != nButtons) {
-				pJoystickAttrib->nButtons = nButtons;
-
 				if (verbosity >= 3)
 					printf("Joystick has %i available buttons\n",(int) nButtons);
+
+				if (nButtons > JOYSTICK_BUTTON_MAX) {
+					if (verbosity)
+						fprintf(stderr, "Only %d of %d may be handled\n",
+							JOYSTICK_BUTTON_MAX, nButtons);
+
+					nButtons = JOYSTICK_BUTTON_MAX;
+				}
+
+				pJoystickAttrib->nButtons = nButtons;
 
 				break;
 			}
