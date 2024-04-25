@@ -1545,9 +1545,9 @@ void report_joystick(struct hidd_report *pReport, void *pReportData,
 //		raw_data.slider = (_int16)nValue;
 
 	/* Fetch HAT data */
-/*	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_HAT_SWITCH, pReportData, &nValue))
-		raw_data.hat_switch = (_int16)nValue;
-	if ( !hidd_get_scaled_usage_value(pPrivData->pRepInstance, NULL, 1, HIDD_USAGE_HAT_SWITCH, pReportData, &nValue) )
+	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_HAT_SWITCH, pReportData, &nValue))
+		raw_data.hat_switch = 0xF & nValue;
+/*	if ( !hidd_get_scaled_usage_value(pPrivData->pRepInstance, NULL, 1, HIDD_USAGE_HAT_SWITCH, pReportData, &nValue) )
 		fprintf( stderr, "Scaled hatswtch=%d\n", nValue);
 
 */
