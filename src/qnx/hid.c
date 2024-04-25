@@ -1514,25 +1514,31 @@ void report_joystick(struct hidd_report *pReport, void *pReportData,
 			}
 	}
 
+	/*
+	 * https://forums.openqnx.com/t/topic/38277/10
+	 * Of course, this fucking 20 year old bug is still there
+	 * And we must masking a returned value with absolute maximum from hid report
+	 */
+
 	/* Fetch positional data */
 	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_X, pReportData, &nValue))
-		raw_data.x = (_int16)nValue;
+		raw_data.x = nValue & pJoystickData->abs_correct[HIDD_USAGE_X - HIDD_USAGE_X].maximum;
 
 	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_Y, pReportData, &nValue))
-		raw_data.y = (_int16)nValue;
+		raw_data.y = nValue & pJoystickData->abs_correct[HIDD_USAGE_Y - HIDD_USAGE_X].maximum;
 
 	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_Z, pReportData, &nValue))
-		raw_data.z = (_int16)nValue;
+		raw_data.z = nValue & pJoystickData->abs_correct[HIDD_USAGE_Z - HIDD_USAGE_X].maximum;
 
 	/* Fetch rotational data */
 	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_RX, pReportData, &nValue))
-		raw_data.Rx = (_int16)nValue;
+		raw_data.Rx = nValue & pJoystickData->abs_correct[HIDD_USAGE_RX - HIDD_USAGE_X].maximum;
 
 	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_RY, pReportData, &nValue))
-		raw_data.Ry = (_int16)nValue;
+		raw_data.Ry = nValue & pJoystickData->abs_correct[HIDD_USAGE_RY - HIDD_USAGE_X].maximum;
 
 	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_RZ, pReportData, &nValue))
-		raw_data.Rz = (_int16)nValue;
+		raw_data.Rz = nValue & pJoystickData->abs_correct[HIDD_USAGE_RZ - HIDD_USAGE_X].maximum;
 
 	/* Fetch slider data */
 //	if (EOK == hidd_get_usage_value(pPrivData->pRepInstance, NULL, HIDD_PAGE_DESKTOP, HIDD_USAGE_SLIDER, pReportData, &nValue))
