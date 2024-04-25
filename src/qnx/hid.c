@@ -1551,8 +1551,8 @@ void report_joystick(struct hidd_report *pReport, void *pReportData,
 		fprintf( stderr, "Scaled hatswtch=%d\n", nValue);
 
 */
-	if (verbosity >= 3)
-		fprintf(stderr, "Raw joystick data: x:%d, y:%d, z:%d, buttons:%llu, Rx:%d, Ry:%d, Rz:%d, Slider:%d, Hat Switch:%d\n",
+	if (verbosity >= 5)
+		fprintf(stdout, "Raw joystick data: x:%04u, y:%04u, z:%04u, buttons:%llu, Rx:%d, Ry:%d, Rz:%d, Slider:%d, Hat Switch:%d\n",
 			raw_data.x, raw_data.y, raw_data.z, raw_data.button_state, raw_data.Rx, raw_data.Ry, raw_data.Rz, raw_data.slider, raw_data.hat_switch);
 
 	// And send data to input module. Joystick data must be transferred _data_t
